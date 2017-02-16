@@ -1,0 +1,24 @@
+<%- include('partials/head.html'); %>
+<%- include('partials/header.html'); %>
+
+<main>
+
+  <p class="articleinfo">Published <%= dateFormatted %>, <%- wordCount %> words, <%- readingTime %>-minute read</p>
+
+  <%- contents %>
+
+  <%- include('partials/nav-child.html'); %>
+
+</main>
+
+<aside>
+  <%- include('partials/nav-relative.html'); %>
+</aside>
+
+<%- include('partials/nav.html'); %>
+
+<footer>
+  <p>ARTICLE TEMPLATE v1.0.0</p>
+</footer>
+
+<%- include('partials/foot.html'); %>

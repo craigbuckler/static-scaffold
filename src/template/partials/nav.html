@@ -1,0 +1,23 @@
+<nav class="main">
+
+  <%
+    let navHTML = navGenerate(nav);
+
+    function navGenerate(navSet) {
+
+      let navHTML = '';
+      for (let p = 0; p < navSet.length; p++) {
+        let page = navSet[p];
+        navHTML +=
+          '<li' + (navlist[page.level] === page.item ? ' class="active"' : '') +
+          '><a href="' + root + page.url + '">' + page.menu + '</a>' +
+          (page.nomenu ? '' : navGenerate(page.child)) + '</li>';
+      }
+
+      return navHTML ? '<ul>' + navHTML + '</ul>' : navHTML;
+    }
+  %>
+
+  <%- navHTML %>
+
+</nav>
