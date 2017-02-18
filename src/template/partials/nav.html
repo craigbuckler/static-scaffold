@@ -7,11 +7,18 @@
 
       let navHTML = '';
       for (let p = 0; p < navSet.length; p++) {
-        let page = navSet[p];
+        let
+          page = navSet[p],
+          open = navlist[page.level] === page.item,
+          active = open && !navlist[page.level+1];
+
         navHTML +=
-          '<li' + (navlist[page.level] === page.item ? ' class="active"' : '') +
-          '><a href="' + root + page.url + '">' + page.menu + '</a>' +
-          (page.nomenu ? '' : navGenerate(page.child)) + '</li>';
+          '<li' + (open ? ' class="open' + (active ? ' active' : '') + '"' : '') + '>' +
+          (active ? '<strong>' : '<a href="' + root + page.url + '">') +
+          page.menu +
+          (active ? '</strong>' : '</a>') +
+          (page.nomenu ? '' : navGenerate(page.child)) +
+          '</li>';
       }
 
       return navHTML ? '<ul>' + navHTML + '</ul>' : navHTML;

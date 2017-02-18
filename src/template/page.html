@@ -3,11 +3,17 @@
 
 <main>
 
+  <h1><%- title %></h1>
+
   <%- contents %>
 
 </main>
 
-<%- include('partials/nav-relative.html'); %>
+<aside>
+  <%- include('partials/nav-relative.html'); %>
+
+  <%- include('partials/tags.html'); %>
+</aside>
 
 <%- include('partials/nav.html'); %>
 

@@ -1,6 +1,7 @@
 ---
 title: Consultancy services
 description: Consultancy services page.
+tag: Service
 priority: 0.9
 ---
 
