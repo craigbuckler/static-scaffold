@@ -52,6 +52,7 @@ const
   // custom Metalsmith plugins
   msutil      = require(dir.lib + 'metalsmith-util'),
   addmeta     = require(dir.lib + 'metalsmith-addmeta'),
+  tags        = require(dir.lib + 'metalsmith-tags'),
   rssfeed     = require(dir.lib + 'metalsmith-rssfeed'),
 
   // other modules
@@ -120,6 +121,7 @@ gulp.task('html', ['images'], () => {
     .use(msutil.rename)
 		.use(markdown())
     .use(addmeta(html.metadata))
+    .use(tags())
     .use(headingid(html.headingid))
     .use(wordcount({ raw: true }))
 		.use(layouts(html.layouts))
