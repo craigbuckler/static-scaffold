@@ -4,4 +4,6 @@ description: How to contact me.
 priority: 0.5
 ---
 
-Contact information.
+Email and telephone information.
+
+Could use [formpost.co](https://formpost.co/) to post form data by email.

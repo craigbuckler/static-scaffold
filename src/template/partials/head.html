@@ -1,8 +1,55 @@
 <!doctype html>
-<html lang="en">
+<html lang="<%= language %>">
 <head>
 <meta charset="UTF-8">
 <title><%= title %> | <%= name %></title>
+
+<!-- styles -->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="<%= root %>styles/main.css?<%- version %>">
+
+<!-- mobile settings -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- feed links -->
+<link rel="alternate" type="application/rss+xml" title="RSS | <%= name %>" href="<%- rootURL %>feed.xml">
+<link rel="alternate" type="application/atom+xml" title="Atom | <%= name %>" href="<%- rootURL %>feed.xml">
+
+<!-- page information -->
 <meta name="description" content="<%= description %>">
+<meta name="keywords" content="<%= keywords %>">
+<meta name="author" content="<%= author %>">
+
+<% if (devBuild || hidden) { %>
+  <meta name="robots" content="noindex, nofollow">
+<% } else { %>
+  <meta name="robots" content="index, follow">
+<% } %>
+
+<!-- Google+ -->
+<meta itemprop="name" content="<%= title %>">
+<meta itemprop="description" content="<%= description %>">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary">
+
+<% if (twitter) { %>
+  <meta property="twitter:site" content="<%= twitter %>">
+  <meta property="twitter:creator" content="<%= twitter %>">
+<% } %>
+
+<meta property="twitter:title" content="<%= title %>">
+<meta property="twitter:description" content="<%= description %>">
+
+<!-- Open Graph -->
+<meta property="og:site_name" content="<%= name %>">
+<meta property="og:url" content="<%= rootURL %><%= url %>">
+<meta property="og:title" content="<%= title %>">
+<meta property="og:description" content="<%= description %>">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="<%= language %>">
+
 </head>
 <body>

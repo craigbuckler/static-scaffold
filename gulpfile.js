@@ -8,6 +8,7 @@ const
   // development or production
   devBuild    = ((process.env.NODE_ENV || 'development').trim().toLowerCase() === 'development'),
   pkg         = require('./package.json'),
+  now         = new Date(),
 
   // source and build folders
   dir = {
@@ -17,15 +18,22 @@ const
     build     : 'build/'
   },
 
+  // TODO: put package name and description here
   sitemeta = {
     devBuild  : devBuild,
     version   : pkg.version,
     name      : 'Static site scaffold',
     desc      : 'A static site scaffold built using Gulp, Metalsmith and custom plugins.',
+    keywords  : 'static, site, website, html, generated',
     author    : 'Craig Buckler',
+    twitter   : '@craigbuckler',
+    company   : 'OptimalWorks Ltd',
     language  : 'en-GB',
     domain    : devBuild ? 'http://192.168.1.22:8000' : 'https://craigbuckler.com',
-    rootpath  : '/'
+    rootpath  : '/',
+    layout    : 'page.html',
+    now       : now,
+    nowYear   : now.getUTCFullYear()
 	},
 
   // Gulp and plugins
@@ -35,8 +43,7 @@ const
   imagemin    = require('gulp-imagemin'),
 
   // Browser-sync
-  browsersync	= devBuild ? require('browser-sync') : null,
-  reload      = devBuild ? browsersync.reload : null,
+  browsersync	= devBuild ? require('browser-sync').create() : null,
 
   // Metalsmith and plugins
   metalsmith  = require('metalsmith'),
@@ -92,7 +99,7 @@ const html = {
   layouts: {
     engine    : 'ejs',
     directory : dir.src + 'template/',
-    default   : 'page.html'
+    default   : sitemeta.layout
   },
 
   tidy: {
@@ -110,21 +117,21 @@ const html = {
 };
 
 // build HTML pages
-gulp.task('html', ['images'], () => {
+gulp.task('html', ['images'], (done) => {
 
   metalsmith(dir.base)
-		.source(html.src)
-		.destination(html.build)
+    .source(html.src)
+    .destination(html.build)
     .metadata(sitemeta)
     .clean(false)
     .use(publish())
     .use(msutil.rename)
-		.use(markdown())
+    .use(markdown())
     .use(addmeta(html.metadata))
     .use(tags())
     .use(headingid(html.headingid))
     .use(wordcount({ raw: true }))
-		.use(layouts(html.layouts))
+    .use(layouts(html.layouts))
     .use(devBuild ? beautify() : minify())
     // .use(devBuild ? msutil.debug : msutil.noop)
     .use(sitemap(html.sitemap))
@@ -132,6 +139,8 @@ gulp.task('html', ['images'], () => {
     .build((err) => {
       if (err) throw err;
     });
+
+  done();
 
 });
 
@@ -173,7 +182,7 @@ const syncOpts = {
 
 // browser-sync
 gulp.task('browsersync', () => {
-  if (browsersync) browsersync(syncOpts);
+  if (browsersync) browsersync.init(syncOpts);
 });
 
 
@@ -181,8 +190,7 @@ gulp.task('browsersync', () => {
 gulp.task('watch', ['browsersync'], () => {
 
 	// page changes
-  gulp.watch(html.watch, ['html']);
-  if (reload) gulp.watch(html.build + '**/*.html').on('change', reload);
+  gulp.watch(html.watch, ['html'], browsersync.reload || {});
 
   // image changes
   gulp.watch(images.src, ['images']);
