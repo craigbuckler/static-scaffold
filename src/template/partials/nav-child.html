@@ -8,6 +8,7 @@
       %>
 
       <li><a href="<%- root + child.url%>">
+        <% if (child.thumb) { %><img src="<%= child.thumb %>" alt="<%= child.title %>" /><% } %>
         <h2><%- child.title %></h2>
         <% if (child.description) { %><p><%- child.description %></p><% } %>
         <time datetime="<%- child.date.toISOString() %>"><%- child.dateF %></time>
