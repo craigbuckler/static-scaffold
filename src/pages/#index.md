@@ -7,8 +7,6 @@ priority: 1.0
 
 Content is added in markdown format to basic files.
 
-[![Craig](/images/craig.jpg)](/contact/)
-
 ## H2 heading
 More information.
 
@@ -32,3 +30,40 @@ Single `code` snippet.
 <div id="realcode">
   <p>Standard HTML can also be used.</p>
 </div>
+
+<form method="post">
+
+  <fieldset>
+    <legend>test form</legend>
+
+  <div class="field">
+    <input type="text" id="name" name="name" placeholder="" />
+    <label for="name">name</label>
+  </div>
+
+  <div class="field">
+    <input type="email" id="email" name="email" placeholder="" />
+    <label for="email">email</label>
+  </div>
+
+  <div class="field tall">
+    <textarea id="comments" name="comments" rows="3" cols="20"></textarea>
+    <label for="comments">comments</label>
+  </div>
+
+  <div class="field">
+    <input type="checkbox" id="subscribe" name="subscribe" />
+    <label for="subscribe">subscribe</label>
+  </div>
+
+  <button type="submit">submit</button>
+
+  </fieldset>
+
+</form>
+
+inline image (`data-inline="1"`):
+<img src="/images/craig.jpg" data-inline="1" alt="inline" />
+
+markdowned image:
+[![Craig](/images/craig.jpg)](/contact/)

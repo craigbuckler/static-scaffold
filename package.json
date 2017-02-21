@@ -10,7 +10,7 @@
   "author": "Craig Buckler",
   "license": "MIT",
   "dependencies": {
-    "autoprefixer": "6.7.3",
+    "autoprefixer": "6.7.4",
     "css-mqpacker": "5.0.1",
     "cssnano": "3.10.0",
     "del": "2.2.2",
@@ -29,6 +29,7 @@
     "metalsmith-beautify": "0.1.0",
     "metalsmith-headings-identifier": "0.0.11",
     "metalsmith-html-minifier": "2.2.0",
+    "metalsmith-inline-source": "^1.0.4",
     "metalsmith-layouts": "1.8.0",
     "metalsmith-mapsite": "1.0.4",
     "metalsmith-markdown": "0.2.1",

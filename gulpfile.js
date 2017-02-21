@@ -41,9 +41,8 @@ const
   gutil       = require('gulp-util'),
   newer       = require('gulp-newer'),
   imagemin    = require('gulp-imagemin'),
-
-  // Browser-sync
-  browsersync	= devBuild ? require('browser-sync').create() : null,
+  sass        = require('gulp-sass'),
+  postcss     = require('gulp-postcss'),
 
   // Metalsmith and plugins
   metalsmith  = require('metalsmith'),
@@ -51,6 +50,7 @@ const
 	layouts		  = require('metalsmith-layouts'),
   markdown    = require('metalsmith-markdown'),
   headingid   = require('metalsmith-headings-identifier'),
+  inline      = require('metalsmith-inline-source'),
   wordcount		= require('metalsmith-word-count'),
   beautify    = require('metalsmith-beautify'),
   minify      = require('metalsmith-html-minifier'),
@@ -69,6 +69,8 @@ const
 // full root URL
 sitemeta.rootURL = sitemeta.domain + (sitemeta.rootpath || '');
 
+// Browser-sync
+var browsersync	= false;
 
 // show build type
 console.log(pkg.name + ' ' + pkg.version + ', ' + (devBuild ? 'development' : 'production') + ' build');
@@ -102,6 +104,11 @@ const html = {
     default   : sitemeta.layout
   },
 
+  inline: {
+    attribute: 'data-inline="1"',
+    rootpath: 'build'
+  },
+
   tidy: {
     indent_size : 2
   },
@@ -132,6 +139,7 @@ gulp.task('html', ['images'], (done) => {
     .use(headingid(html.headingid))
     .use(wordcount({ raw: true }))
     .use(layouts(html.layouts))
+    .use(inline(html.inline))
     .use(devBuild ? beautify() : minify())
     // .use(devBuild ? msutil.debug : msutil.noop)
     .use(sitemap(html.sitemap))
@@ -145,7 +153,7 @@ gulp.task('html', ['images'], (done) => {
 });
 
 
-// process images
+// image settings
 const images = {
   src         : dir.src + 'images/**/*',
   build       : dir.build + 'images/',
@@ -161,6 +169,44 @@ gulp.task('images', () => {
     .pipe(newer(images.build))
     .pipe(imagemin(images.minOpts))
     .pipe(gulp.dest(images.build));
+});
+
+
+// CSS settings
+var css = {
+  src         : dir.src + 'scss/main.scss',
+  watch       : dir.src + 'scss/**/*',
+  build       : dir.build + 'css/',
+  sassOpts: {
+    outputStyle     : 'nested',
+    imagePath       : '/images/',
+    precision       : 3,
+    errLogToConsole : true
+  },
+  processors: [
+    require('postcss-assets')({
+      loadPaths: ['images/'],
+      basePath: dir.build
+    }),
+    require('autoprefixer')({
+      browsers: ['last 2 versions', '> 2%']
+    }),
+    require('css-mqpacker')
+  ]
+};
+
+// production CSS
+if (!devBuild) {
+  css.processors.push(require('cssnano'));
+}
+
+// Sass/CSS processing
+gulp.task('css', ['images'], () => {
+  return gulp.src(css.src)
+    .pipe(sass(css.sassOpts))
+		.pipe(postcss(css.processors))
+    .pipe(gulp.dest(css.build))
+    .pipe(browsersync ? browsersync.reload({ stream: true }) : gutil.noop());
 });
 
 
@@ -182,6 +228,9 @@ const syncOpts = {
 
 // browser-sync
 gulp.task('browsersync', () => {
+  if (browsersync === false) {
+    browsersync	= devBuild ? require('browser-sync').create() : null;
+  }
   if (browsersync) browsersync.init(syncOpts);
 });
 
@@ -190,16 +239,19 @@ gulp.task('browsersync', () => {
 gulp.task('watch', ['browsersync'], () => {
 
 	// page changes
-  gulp.watch(html.watch, ['html'], browsersync.reload || {});
+  gulp.watch(html.watch, ['html'], browsersync ? browsersync.reload : {});
 
   // image changes
   gulp.watch(images.src, ['images']);
+
+    // CSS changes
+  gulp.watch(css.watch, ['css']);
 
 });
 
 
 // run all tasks immediately
-gulp.task('build', ['html']);
+gulp.task('build', ['html', 'css']);
 
 
 // default task
