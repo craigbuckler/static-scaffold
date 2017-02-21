@@ -2,12 +2,20 @@
   "name": "static-scaffold",
   "version": "1.0.0",
   "description": "A Gulp and Metalsmith static site generator",
-  "main": "index.js",
+  "author": "Craig Buckler",
+  "main": "gulp build",
+  "site": {
+    "name"      : "Static site scaffold",
+    "desc"      : "A static site scaffold built using Gulp, Metalsmith and custom plugins.",
+    "keywords"  : "static, site, website, html, generated",
+    "company"   : "OptimalWorks.net",
+    "twitter"   : "@craigbuckler",
+    "language"  : "en-GB"
+  },
   "scripts": {
     "start": "gulp build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Craig Buckler",
   "license": "MIT",
   "dependencies": {
     "autoprefixer": "6.7.4",

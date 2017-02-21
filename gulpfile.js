@@ -18,17 +18,19 @@ const
     build     : 'build/'
   },
 
-  // TODO: put package name and description here
+  // site meta data
+  site        = pkg.site,
+
   sitemeta = {
     devBuild  : devBuild,
     version   : pkg.version,
-    name      : 'Static site scaffold',
-    desc      : 'A static site scaffold built using Gulp, Metalsmith and custom plugins.',
-    keywords  : 'static, site, website, html, generated',
-    author    : 'Craig Buckler',
-    twitter   : '@craigbuckler',
-    company   : 'OptimalWorks Ltd',
-    language  : 'en-GB',
+    name      : site.name,
+    desc      : site.desc,
+    keywords  : site.keywords,
+    author    : pkg.author,
+    twitter   : site.twitter,
+    company   : site.company,
+    language  : site.language,
     domain    : devBuild ? 'http://192.168.1.22:8000' : 'https://craigbuckler.com',
     rootpath  : '/',
     layout    : 'page.html',
@@ -43,6 +45,10 @@ const
   imagemin    = require('gulp-imagemin'),
   sass        = require('gulp-sass'),
   postcss     = require('gulp-postcss'),
+  deporder    = require('gulp-deporder'),
+  concat      = require('gulp-concat'),
+  stripdebug  = require('gulp-strip-debug'),
+  uglify      = require('gulp-uglify'),
 
   // Metalsmith and plugins
   metalsmith  = require('metalsmith'),
@@ -153,6 +159,20 @@ gulp.task('html', ['images'], (done) => {
 });
 
 
+// root settings
+const root = {
+  src         : dir.src + 'root/*.*',
+  build       : dir.build,
+};
+
+// root file processing
+gulp.task('root', () => {
+  return gulp.src(root.src)
+    .pipe(newer(root.build))
+    .pipe(gulp.dest(root.build));
+});
+
+
 // image settings
 const images = {
   src         : dir.src + 'images/**/*',
@@ -210,6 +230,48 @@ gulp.task('css', ['images'], () => {
 });
 
 
+// JavaScript settings
+const js = {
+  src         : dir.src + 'js/**/*',
+  build       : dir.build + 'js/',
+  filename    : 'main.js'
+};
+
+// JavaScript processing
+gulp.task('js', () => {
+
+  return gulp.src(js.src)
+    .pipe(deporder())
+    .pipe(concat(js.filename))
+    .pipe(devBuild ? gutil.noop() : stripdebug())
+    .pipe(devBuild ? gutil.noop() : uglify())
+    .pipe(gulp.dest(js.build))
+    .pipe(browsersync ? browsersync.reload({ stream: true }) : gutil.noop());
+
+});
+
+
+// root JavaScript (service workers) settings
+const jsroot = {
+  src         : dir.src + 'jsroot/**/*',
+  build       : dir.build,
+  filename    : 'worker.js'
+};
+
+// root JavaScript processing
+gulp.task('jsroot', () => {
+
+  return gulp.src(jsroot.src)
+    .pipe(deporder())
+    .pipe(concat(jsroot.filename))
+    .pipe(devBuild ? gutil.noop() : stripdebug())
+    .pipe(devBuild ? gutil.noop() : uglify())
+    .pipe(gulp.dest(jsroot.build));
+
+});
+
+
+
 // browser-sync options
 const syncOpts = {
   server: {
@@ -244,14 +306,23 @@ gulp.task('watch', ['browsersync'], () => {
   // image changes
   gulp.watch(images.src, ['images']);
 
+  // root changes
+  gulp.watch(root.src, ['root']);
+
     // CSS changes
   gulp.watch(css.watch, ['css']);
+
+  // JavaScript changes
+  gulp.watch(js.src, ['js']);
+
+  // root JavaScript changes
+  gulp.watch(jsroot.src, ['jsroot']);
 
 });
 
 
 // run all tasks immediately
-gulp.task('build', ['html', 'css']);
+gulp.task('build', ['root', 'html', 'css', 'js', 'jsroot']);
 
 
 // default task

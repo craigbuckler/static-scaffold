@@ -1,0 +1,26 @@
+{
+	"lang"							: "en-GB",
+	"dir"								: "ltr",
+	"name"							: "Static site",
+	"short_name"				: "Static",
+	"description"				: "Static site manofest",
+	"scope"							: "/",
+	"start_url"					: "/",
+	"display"						: "minimal-ui",
+	"theme_color"				: "#dddddd",
+	"background_color"	: "#dddddd",
+	"icons": [
+		{
+			"src"						: "/images/a70.png",
+			"sizes"					: "70x70"
+		},
+		{
+			"src"						:	"/images/a200.png",
+			"sizes"					: "200x200"
+		},
+		{
+			"src"						: "/images/a310.png",
+			"sizes"					: "310x150"
+		}
+	]
+}
