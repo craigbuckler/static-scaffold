@@ -5,6 +5,20 @@ description: This is a demonstration site.
 priority: 1.0
 ---
 
+Resources:
+
+* [Git repository](https://github.com/craigbuckler/static-scaffold)
+* [Gulp](http://gulpjs.com/)
+* [Gulp introduction](https://www.sitepoint.com/introduction-gulp-js/)
+* [Metalsmith](http://www.metalsmith.io/)
+* [gulpsmith](https://www.npmjs.com/package/gulpsmith)
+* [EJS template](http://ejs.co/)
+
+Hosting:
+
+* [Cloudflare](https://www.cloudflare.com/)
+* [staticland](https://static.land/)
+
 Content is added in markdown format to basic files.
 
 ## H2 heading

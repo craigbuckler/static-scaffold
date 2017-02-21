@@ -12,7 +12,7 @@
           open = navlist[page.level] === page.item,
           active = open && !navlist[page.level+1];
 
-        if (!page.hidden) navHTML +=
+        if (!page.private) navHTML +=
           '<li' + (open ? ' class="open' + (active ? ' active' : '') + '"' : '') + '>' +
           (active ? '<strong>' : '<a href="' + root + page.url + '">') +
           page.menu +

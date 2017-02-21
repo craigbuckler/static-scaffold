@@ -10,7 +10,11 @@
     "keywords"  : "static, site, website, html, generated",
     "company"   : "OptimalWorks.net",
     "twitter"   : "@craigbuckler",
-    "language"  : "en-GB"
+    "language"  : "en-GB",
+    "domain"    : "http://craigbuckler.com",
+    "root"      : "/",
+    "devdomain" : "http://192.168.1.22:8000",
+    "devroot"   : "/"
   },
   "scripts": {
     "start": "gulp build",

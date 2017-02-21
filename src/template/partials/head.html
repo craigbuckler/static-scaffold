@@ -22,7 +22,7 @@
 <meta name="keywords" content="<%= keywords %>">
 <meta name="author" content="<%= author %>">
 
-<% if (devBuild || hidden) { %>
+<% if (devBuild || private) { %>
   <meta name="robots" content="noindex, nofollow">
 <% } else { %>
   <meta name="robots" content="index, follow">

@@ -2,7 +2,7 @@
 title: Private page
 description: This page is rendered but will not appear in menus.
 priority: 0.3
-hidden: true
+private: true
 layout: article.html
 nomenu: true
 orderby: 'date'

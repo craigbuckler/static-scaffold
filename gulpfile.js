@@ -3,10 +3,14 @@
 (() => {
 'use strict';
 
+// development or production
+var devBuild  = ((process.env.NODE_ENV || 'development').trim().toLowerCase() === 'development');
+
 const
 
-  // development or production
-  devBuild    = ((process.env.NODE_ENV || 'development').trim().toLowerCase() === 'development'),
+  // show debug output
+  debug       = false,
+
   pkg         = require('./package.json'),
   now         = new Date(),
 
@@ -31,8 +35,8 @@ const
     twitter   : site.twitter,
     company   : site.company,
     language  : site.language,
-    domain    : devBuild ? 'http://192.168.1.22:8000' : 'https://craigbuckler.com',
-    rootpath  : '/',
+    domain    : devBuild ? site.devdomain : site.domain,
+    rootpath  : devBuild ? site.devroot : site.root,
     layout    : 'page.html',
     now       : now,
     nowYear   : now.getUTCFullYear()
@@ -83,10 +87,11 @@ console.log(pkg.name + ' ' + pkg.version + ', ' + (devBuild ? 'development' : 'p
 
 
 // clean build folder
-gulp.task('clean', () => {
+gulp.task('clean', (done) => {
   del([
 		dir.build,
   ]);
+  done();
 });
 
 
@@ -147,7 +152,7 @@ gulp.task('html', ['images'], (done) => {
     .use(layouts(html.layouts))
     .use(inline(html.inline))
     .use(devBuild ? beautify() : minify())
-    // .use(devBuild ? msutil.debug : msutil.noop)
+    .use(debug ? msutil.debug : msutil.noop)
     .use(sitemap(html.sitemap))
     .use(rssfeed(html.rssfeed))
     .build((err) => {
