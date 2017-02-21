@@ -1,21 +1,16 @@
 // Base styles
-html, body {
-  width: 100%;
-  height: 100%;
+html {
+	touch-action: manipulation;
+}
+
+body {
   font-family: $font-main;
   font-size: $font-size-old;
   font-size: $font-size-rwd;
   font-weight: 300;
   line-height: 1.2;
   @include reset;
-}
-
-html {
-	touch-action: manipulation;
-}
-
-body {
-	overflow-y: scroll;
+  overflow-y: scroll;
 }
 
 table, input, output, textarea, select, option, pre, button {
