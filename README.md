@@ -20,3 +20,11 @@ Build files for production deployment:
 ```
 NODE_ENV=production gulp build
 ```
+
+
+## Deployment
+Upload using FTP (not ideal but works on most hosts):
+
+```
+gulp deploy -u <ID> -p <PW>
+```

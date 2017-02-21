@@ -73,7 +73,8 @@ const
   rssfeed     = require(dir.lib + 'metalsmith-rssfeed'),
 
   // other modules
-  del         = require('del')
+  del         = require('del'),
+  util        = require(dir.lib + 'util')
 ;
 
 // full root URL
@@ -150,6 +151,7 @@ gulp.task('html', ['images'], (done) => {
     .use(headingid(html.headingid))
     .use(wordcount({ raw: true }))
     .use(layouts(html.layouts))
+    .use(msutil.shortcodes)
     .use(inline(html.inline))
     .use(devBuild ? beautify() : minify())
     .use(debug ? msutil.debug : msutil.noop)
@@ -332,5 +334,34 @@ gulp.task('build', ['root', 'html', 'css', 'js', 'jsroot']);
 
 // default task
 gulp.task('default', ['build', 'watch']);
+
+
+// deploy via FTP task - pass -u <id> -p <pw>
+gulp.task('deploy', () => {
+
+  let
+    ftp = require('vinyl-ftp'),
+    arg = util.parseArgs(process.argv),
+    conn = ftp.create({
+      host      : site.ftphost,
+      user      : arg.user || arg.u,
+      password  : arg.password || arg.p,
+      parallel  : 1,
+      log       : gutil.log
+    }),
+    glob = [
+      dir.build + '**/*'
+    ],
+    src = {
+      base      : dir.build,
+      buffer    : false
+    },
+    remotePath = site.ftpdest + site.root;
+
+  return gulp.src(glob, src)
+    .pipe(conn.newerOrDifferentSize(remotePath))
+    .pipe(conn.dest(remotePath));
+
+});
 
 })();

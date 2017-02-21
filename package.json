@@ -12,7 +12,9 @@
     "twitter"   : "@craigbuckler",
     "language"  : "en-GB",
     "domain"    : "http://craigbuckler.com",
-    "root"      : "/",
+    "ftphost"   : "ftp.gridhost.co.uk",
+    "ftpdest"   : "/public_html",
+    "root"      : "/testsite/",
     "devdomain" : "http://192.168.1.22:8000",
     "devroot"   : "/"
   },
@@ -47,7 +49,8 @@
     "metalsmith-markdown": "0.2.1",
     "metalsmith-publish": "0.1.5",
     "metalsmith-word-count": "0.0.4",
-    "postcss-assets": "4.1.0"
+    "postcss-assets": "4.1.0",
+    "vinyl-ftp": "^0.6.0"
   },
   "devDependencies": {
     "browser-sync": "2.18.8"

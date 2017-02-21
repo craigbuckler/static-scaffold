@@ -21,6 +21,15 @@ Hosting:
 
 Content is added in markdown format to basic files.
 
+## Shortcodes
+The shortcodes **name**, **version**, **url**, **root**, **rootURL**, **menu**, **nowYear** and **dateFormatted** can be used between [ and ] brackets, e.g.
+
+* [**name**]: [name]
+* [**rootURL**]: [rootURL]
+* [**nowYear**]: [nowYear]
+
+These can be added to markdown files (they are already available as variables to view templates).
+
 ## H2 heading
 More information.
 
@@ -80,4 +89,4 @@ inline image (`data-inline="1"`):
 <img src="/images/craig.jpg" data-inline="1" alt="inline" />
 
 markdowned image:
-[![Craig](/images/craig.jpg)](/contact/)
+[![Craig]([root]images/craig.jpg)]([root]contact/)
