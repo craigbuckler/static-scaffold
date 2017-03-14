@@ -24,9 +24,14 @@ Content is added in markdown format to basic files.
 ## Shortcodes
 The shortcodes **name**, **version**, **url**, **root**, **rootURL**, **menu**, **nowYear** and **dateFormatted** can be used between [ and ] brackets, e.g.
 
+* [**version**]: [version]
 * [**name**]: [name]
-* [**rootURL**]: [rootURL]
+* [**menu**]: [menu]
+* [**dateFormatted**]: [dateFormatted]
 * [**nowYear**]: [nowYear]
+* [**url**]: [url]
+* [**root**]: [root]
+* [**rootURL**]: [rootURL]
 
 These can be added to markdown files (they are already available as variables to view templates).
 
@@ -85,8 +90,10 @@ Single `code` snippet.
 
 </form>
 
-inline image (`data-inline="1"`):
-<img src="/images/craig.jpg" data-inline="1" alt="inline" />
-
 markdowned image:
 [![Craig]([root]images/craig.jpg)]([root]contact/)
+
+progressive image (inlined with `data-inline="1"`):
+<a href="[root]images/craig.jpg" class="progressive replace">
+  <img src="[root]images/craig-pv.jpg" alt="Craig" class="preview" />
+</a>

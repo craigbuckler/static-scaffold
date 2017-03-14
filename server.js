@@ -20,29 +20,31 @@ var
   fs = require('fs'),
   folder = 'build',
   port = parseInt(process.argv[2] || 8000, 10),
-  mime = {
-    '.html': 'text/html',
-    '.htm':  'text/html',
-    '.css':  'text/css',
-    '.js':   'application/javascript',
-    '.json': 'application/json',
-    '.jp':   'image/jpeg',
-    '.png':  'image/png',
-    '.gif':  'image/gif',
-    '.ico':  'image/x-icon',
-    '.svg':  'image/svg+xml',
-    '.txt':  'text/plain'
+  mime  = {
+    '.html' : ['text/html', 86400],
+    '.htm'  : ['text/html', 86400],
+    '.css'  : ['text/css', 86400],
+    '.js'   : ['application/javascript', 86400],
+    '.json' : ['application/json', 86400],
+    '.jpg'  : ['image/jpeg', 0],
+    '.jpeg' : ['image/jpeg', 0],
+    '.png'  : ['image/png', 0],
+    '.gif'  : ['image/gif', 0],
+    '.ico'  : ['image/x-icon', 0],
+    '.svg'  : ['image/svg+xml', 0],
+    '.txt'  : ['text/plain', 86400],
+    'err'   : ['text/plain', 30]
   };
 
 // new server
-http.createServer(function(req, res) {
+http.createServer((req, res) => {
 
-  var
+  let
     uri = url.parse(req.url).pathname,
     filename = path.join(process.cwd(), folder, uri);
 
   // file available?
-  fs.access(filename, fs.constants.R_OK, function(err) {
+  fs.access(filename, fs.constants.R_OK, (err) => {
 
     // not found
     if (err) {
@@ -54,7 +56,7 @@ http.createServer(function(req, res) {
     if (fs.statSync(filename).isDirectory()) filename += '/index.html';
 
     // read file
-    fs.readFile(filename, function(err, file) {
+    fs.readFile(filename, (err, file) => {
 
       if (err) {
         // error reading
@@ -62,7 +64,7 @@ http.createServer(function(req, res) {
       }
       else {
         // return file
-        serve(200, file, mime[path.extname(filename)]);
+        serve(200, file, path.extname(filename));
       }
 
     });
@@ -70,9 +72,17 @@ http.createServer(function(req, res) {
 
   // serve content
   function serve(code, content, type) {
-    res.writeHead(code, { 'Content-Type': type || mime['.txt'] });
+
+    let head = mime[type] || mime['err'];
+
+    res.writeHead(code, {
+      'Content-Type'    : head[0],
+      'Cache-Control'   : 'must-revalidate, max-age=' + (head[1] || 2419200),
+      'Content-Length'  : Buffer.byteLength(content)
+    });
     res.write(content);
     res.end();
+
   }
 
 }).listen(port);

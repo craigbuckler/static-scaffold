@@ -1,7 +1,7 @@
 /*
 	Utility library
 
-	// requires: config.js
+	// requires: config.js pwa.js
 */
 
 ss.lib = (function() {
@@ -229,6 +229,28 @@ ss.lib = (function() {
 				callback(e);
 			}
 		}, false);
+	}
+
+
+	// custom events
+	if (CustomEvent && window.addEventListener && window.requestAnimationFrame) {
+
+		// throttled scroll/resize
+		window.addEventListener('scroll', scroller, false);
+  	window.addEventListener('resize', scroller, false);
+
+		var scTimer;
+		function scroller(e) {
+
+			scTimer = scTimer || setTimeout(function() {
+				scTimer = null;
+				requestAnimationFrame(function() {
+					window.dispatchEvent(new CustomEvent('scrollresize', { detail: {}}));
+				});
+			}, 300);
+
+  	}
+
 	}
 
 
