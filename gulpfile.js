@@ -9,73 +9,73 @@ var devBuild  = ((process.env.NODE_ENV || 'development').trim().toLowerCase() ==
 const
 
   // show debug output
-  debug       = false,
+  debug         = false,
 
-  pkg         = require('./package.json'),
-  now         = new Date(),
+  pkg           = require('./package.json'),
+  now           = new Date(),
 
   // source and build folders
   dir = {
-    base      : __dirname + '/',
-    lib       : __dirname + '/lib/',
-    src       : 'src/',
-    build     : 'build/'
+    base        : __dirname + '/',
+    lib         : __dirname + '/lib/',
+    src         : 'src/',
+    build       : 'build/'
   },
 
   // site meta data
   site        = pkg.site,
 
   sitemeta = {
-    devBuild  : devBuild,
-    version   : pkg.version,
-    name      : site.name,
-    desc      : site.desc,
-    keywords  : site.keywords,
-    author    : pkg.author,
-    twitter   : site.twitter,
-    company   : site.company,
-    language  : site.language,
-    domain    : devBuild ? site.devdomain : site.domain,
-    rootpath  : devBuild ? site.devroot : site.root,
-    layout    : 'page.html',
-    now       : now,
-    nowYear   : now.getUTCFullYear()
+    devBuild    : devBuild,
+    version     : pkg.version,
+    author      : pkg.author,
+    domain      : devBuild ? site.devdomain : site.domain,
+    rootpath    : devBuild ? site.devroot : site.root,
+    layout      : 'page.html',
+    now         : now,
+    nowYear     : now.getUTCFullYear()
 	},
 
   // Gulp and plugins
-  gulp        = require('gulp'),
-  gutil       = require('gulp-util'),
-  newer       = require('gulp-newer'),
-  imagemin    = require('gulp-imagemin'),
-  sass        = require('gulp-sass'),
-  postcss     = require('gulp-postcss'),
-  deporder    = require('gulp-deporder'),
-  concat      = require('gulp-concat'),
-  stripdebug  = require('gulp-strip-debug'),
-  uglify      = require('gulp-uglify'),
+  gulp          = require('gulp'),
+  gutil         = require('gulp-util'),
+  newer         = require('gulp-newer'),
+  imagemin      = require('gulp-imagemin'),
+  sass          = require('gulp-sass'),
+  postcss       = require('gulp-postcss'),
+  preprocess    = require('gulp-preprocess'),
+  deporder      = require('gulp-deporder'),
+  concat        = require('gulp-concat'),
+  stripdebug    = require('gulp-strip-debug'),
+  uglify        = require('gulp-uglify'),
 
   // Metalsmith and plugins
-  metalsmith  = require('metalsmith'),
-  publish     = require('metalsmith-publish'),
-	layouts		  = require('metalsmith-layouts'),
-  markdown    = require('metalsmith-markdown'),
-  headingid   = require('metalsmith-headings-identifier'),
-  inline      = require('metalsmith-inline-source'),
-  wordcount		= require('metalsmith-word-count'),
-  beautify    = require('metalsmith-beautify'),
-  minify      = require('metalsmith-html-minifier'),
-  sitemap			= require('metalsmith-mapsite'),
+  metalsmith    = require('metalsmith'),
+  publish       = require('metalsmith-publish'),
+	layouts		    = require('metalsmith-layouts'),
+  markdown      = require('metalsmith-markdown'),
+  headingid     = require('metalsmith-headings-identifier'),
+  inline        = require('metalsmith-inline-source'),
+  wordcount		  = require('metalsmith-word-count'),
+  beautify      = require('metalsmith-beautify'),
+  minify        = require('metalsmith-html-minifier'),
+  sitemap			  = require('metalsmith-mapsite'),
 
   // custom Metalsmith plugins
-  msutil      = require(dir.lib + 'metalsmith-util'),
-  addmeta     = require(dir.lib + 'metalsmith-addmeta'),
-  tags        = require(dir.lib + 'metalsmith-tags'),
-  rssfeed     = require(dir.lib + 'metalsmith-rssfeed'),
+  msutil        = require(dir.lib + 'metalsmith-util'),
+  addmeta       = require(dir.lib + 'metalsmith-addmeta'),
+  tags          = require(dir.lib + 'metalsmith-tags'),
+  rssfeed       = require(dir.lib + 'metalsmith-rssfeed'),
 
   // other modules
-  del         = require('del'),
-  util        = require(dir.lib + 'util')
+  del           = require('del'),
+  util          = require(dir.lib + 'util')
 ;
+
+// copy package properties
+for (let p in site) {
+  sitemeta[p] = site[p];
+}
 
 // full root URL
 sitemeta.rootURL = sitemeta.domain + (sitemeta.rootpath || '');
@@ -167,17 +167,41 @@ gulp.task('html', ['images'], (done) => {
 
 
 // root settings
-const root = {
-  src         : dir.src + 'root/*.*',
-  build       : dir.build,
+const
+  root = {
+    build       : dir.build
+  },
+  rootprocess = {
+    src         : dir.src + 'root/process/*.*'
+  };
+
+// root file processing
+gulp.task('rootprocess', () => {
+  return gulp.src(rootprocess.src)
+    .pipe(newer(root.build))
+    .pipe(preprocess({ extension: 'js', context: sitemeta }))
+    .pipe(gulp.dest(root.build));
+});
+
+
+// root image settings
+const rootimages = {
+  src         : dir.src + 'root/images/*.*',
+  minOpts: {
+    optimizationLevel: 5
+  }
 };
 
 // root file processing
-gulp.task('root', () => {
-  return gulp.src(root.src)
+gulp.task('rootimages', () => {
+  return gulp.src(rootimages.src)
     .pipe(newer(root.build))
     .pipe(gulp.dest(root.build));
 });
+
+
+// root file processing
+gulp.task('root', ['rootprocess', 'rootimages']);
 
 
 // image settings
@@ -239,7 +263,7 @@ gulp.task('css', ['images'], () => {
 
 // JavaScript settings
 const js = {
-  src         : dir.src + 'js/**/*',
+  src         : dir.src + 'js/main/**/*',
   build       : dir.build + 'js/',
   filename    : 'main.js'
 };
@@ -248,6 +272,7 @@ const js = {
 gulp.task('js', () => {
 
   return gulp.src(js.src)
+    .pipe(preprocess({ context: sitemeta }))
     .pipe(deporder())
     .pipe(concat(js.filename))
     .pipe(devBuild ? gutil.noop() : stripdebug())
@@ -258,22 +283,41 @@ gulp.task('js', () => {
 });
 
 
-// root JavaScript (service workers) settings
-const jsroot = {
-  src         : dir.src + 'jsroot/**/*',
+// single JavaScript files (not concatenated)
+const jssingle = {
+  src         : dir.src + 'js/single/**/*',
+  build       : dir.build + 'js/'
+};
+
+// JavaScript single file processing
+gulp.task('jssingle', () => {
+
+  return gulp.src(jssingle.src)
+    .pipe(preprocess({ context: sitemeta }))
+    .pipe(devBuild ? gutil.noop() : stripdebug())
+    .pipe(devBuild ? gutil.noop() : uglify())
+    .pipe(gulp.dest(jssingle.build));
+
+});
+
+
+// root JavaScript PWA service worker
+const jspwa = {
+  src         : dir.src + 'js/pwa/**/*',
   build       : dir.build,
-  filename    : 'worker.js'
+  filename    : 'sw.js'
 };
 
 // root JavaScript processing
-gulp.task('jsroot', () => {
+gulp.task('jspwa', () => {
 
-  return gulp.src(jsroot.src)
+  return gulp.src(jspwa.src)
+    .pipe(preprocess({ context: sitemeta }))
     .pipe(deporder())
-    .pipe(concat(jsroot.filename))
+    .pipe(concat(jspwa.filename))
     .pipe(devBuild ? gutil.noop() : stripdebug())
     .pipe(devBuild ? gutil.noop() : uglify())
-    .pipe(gulp.dest(jsroot.build));
+    .pipe(gulp.dest(jspwa.build));
 
 });
 
@@ -319,17 +363,20 @@ gulp.task('watch', ['browsersync'], () => {
     // CSS changes
   gulp.watch(css.watch, ['css']);
 
-  // JavaScript changes
+  // JavaScript main changes
   gulp.watch(js.src, ['js']);
 
-  // root JavaScript changes
-  gulp.watch(jsroot.src, ['jsroot']);
+  // JavaScript single file changes
+  gulp.watch(js.src, ['jssingle']);
+
+  // JavaScript worker changes
+  gulp.watch(jspwa.src, ['jspwa']);
 
 });
 
 
 // run all tasks immediately
-gulp.task('build', ['root', 'html', 'css', 'js', 'jsroot']);
+gulp.task('build', ['root', 'html', 'css', 'js', 'jssingle', 'jspwa']);
 
 
 // default task
@@ -359,7 +406,7 @@ gulp.task('deploy', () => {
     remotePath = site.ftpdest + site.root;
 
   return gulp.src(glob, src)
-    .pipe(conn.newerOrDifferentSize(remotePath))
+    .pipe(conn.differentSize(remotePath))
     .pipe(conn.dest(remotePath));
 
 });

@@ -4,11 +4,11 @@
 $font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
 $font-mono: Consolas, Menlo, "DejaVu Mono", monospace;
 $font-size-old: 100%;
-$font-size-rwd: calc(100% + 0.2vw);
+$font-size-rwd: calc(1em + 0.2vw);
 
 // responsive breakpoints
 $breakpoint: (
-	'small'		: 30em,
-	'medium'	: 56em,
-	'large'		: 70em
+	'small'		: 30rem,
+	'medium'	: 56rem,
+	'large'		: 70rem
 );
