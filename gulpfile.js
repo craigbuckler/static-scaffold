@@ -48,6 +48,7 @@ const
   concat        = require('gulp-concat'),
   stripdebug    = require('gulp-strip-debug'),
   uglify        = require('gulp-uglify'),
+  lightmin      = require('gulp-lightmin'),
 
   // Metalsmith and plugins
   metalsmith    = require('metalsmith'),
@@ -240,7 +241,7 @@ var css = {
       basePath: dir.build
     }),
     require('autoprefixer')({
-      browsers: ['last 2 versions', '> 2%']
+      browsers: ['> 2%']
     }),
     require('css-mqpacker')
   ]
@@ -277,6 +278,7 @@ gulp.task('js', () => {
     .pipe(concat(js.filename))
     .pipe(devBuild ? gutil.noop() : stripdebug())
     .pipe(devBuild ? gutil.noop() : uglify())
+    .on('error', (err) => { gutil.log(gutil.colors.red('[Error]'), err.toString()); })
     .pipe(gulp.dest(js.build))
     .pipe(browsersync ? browsersync.reload({ stream: true }) : gutil.noop());
 
@@ -295,7 +297,8 @@ gulp.task('jssingle', () => {
   return gulp.src(jssingle.src)
     .pipe(preprocess({ context: sitemeta }))
     .pipe(devBuild ? gutil.noop() : stripdebug())
-    .pipe(devBuild ? gutil.noop() : uglify())
+    .pipe(devBuild ? gutil.noop() : lightmin())
+    .on('error', (err) => { gutil.log(gutil.colors.red('[Error]'), err.toString()); })
     .pipe(gulp.dest(jssingle.build));
 
 });
@@ -316,7 +319,8 @@ gulp.task('jspwa', () => {
     .pipe(deporder())
     .pipe(concat(jspwa.filename))
     .pipe(devBuild ? gutil.noop() : stripdebug())
-    .pipe(devBuild ? gutil.noop() : uglify())
+    .pipe(devBuild ? gutil.noop() : lightmin())
+    .on('error', (err) => { gutil.log(gutil.colors.red('[Error]'), err.toString()); })
     .pipe(gulp.dest(jspwa.build));
 
 });
