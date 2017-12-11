@@ -5,85 +5,113 @@
 */
 (function() {
 
-'use strict';
+  'use strict';
 
-// unsupported browser
-if (!CustomEvent || !document.getElementsByClassName) return;
-
-
-// progressive image loader
-window.addEventListener('load', function() {
-
-  // start
-  var pItem = document.getElementsByClassName('progressive replace');
-
-  // custom scroll/resize event
-  window.addEventListener('scrollresize', inView, false);
-  inView();
+  // unsupported browser
+  if (!CustomEvent || !document.getElementsByClassName || !document.body.classList) return;
 
 
-  // image in view?
-  function inView() {
+  // progressive image loader
+  window.addEventListener('load', function() {
 
-    var wT = window.pageYOffset, wB = wT + window.innerHeight, cRect, pT, pB, p = 0;
-    while (p < pItem.length) {
+    // start
+    var pItem = document.getElementsByClassName('progressive replace'), pCount;
 
-      cRect = pItem[p].getBoundingClientRect();
-      pT = wT + cRect.top;
-      pB = pT + cRect.height;
+    // custom scroll/resize event
+    window.addEventListener('scrollresize', inView, false);
 
-      if (wT < pB && wB > pT) {
-        loadFullImage(pItem[p]);
-        pItem[p].classList.remove('replace');
-      }
-      else p++;
+    // DOM mutation observer
+    if (MutationObserver) {
+
+      var observer = new MutationObserver(function() {
+        if (pItem.length !== pCount) inView();
+      });
+      observer.observe(document.body, { subtree: true, childList: true, attributes: true, characterData: true });
 
     }
 
-  }
+
+    // initial check
+    inView();
 
 
-  // replace with full image
-  function loadFullImage(item) {
+    // image in view?
+    function inView() {
 
-    var href = item && (item.href || item.getAttribute('data-href'));
-    if (!href) return;
+      if (pItem.length) requestAnimationFrame(function() {
 
-    // load image
-    var img = new Image();
-    if (item.dataset) {
-      img.srcset = item.dataset.srcset || '';
-      img.sizes = item.dataset.sizes || '';
-    }
-    img.src = href;
-    img.className = 'reveal';
-    if (img.complete) addImg();
-    else img.onload = addImg;
+        var wT = window.pageYOffset, wB = wT + window.innerHeight, cRect, pT, pB, p = 0;
+        while (p < pItem.length) {
 
-    // replace image
-    function addImg() {
+          cRect = pItem[p].getBoundingClientRect();
+          pT = wT + cRect.top;
+          pB = pT + cRect.height;
 
-      // disable click
-      item.addEventListener('click', function(e) { e.preventDefault(); }, false);
+          if (wT < pB && wB > pT) {
+            loadFullImage(pItem[p]);
+            pItem[p].classList.remove('replace');
+          }
+          else p++;
 
-      // add full image
-      item.appendChild(img).addEventListener('animationend', function(e) {
-
-        // remove preview image
-        var pImg = item.querySelector && item.querySelector('img.preview');
-        if (pImg) {
-          e.target.alt = pImg.alt || '';
-          item.removeChild(pImg);
-          e.target.classList.remove('reveal');
         }
 
-      }, false);
+        pCount = pItem.length;
+
+      });
 
     }
 
-  }
 
-}, false);
+    // replace with full image
+    function loadFullImage(item) {
+
+      var href = item && (item.getAttribute('data-href') || item.href);
+      if (!href) return;
+
+      // load image
+      var img = new Image();
+      if (item.dataset) {
+        img.srcset = item.dataset.srcset || '';
+        img.sizes = item.dataset.sizes || '';
+      }
+      img.src = href;
+      img.className = 'reveal';
+      if (img.complete) addImg();
+      else img.onload = addImg;
+
+      // replace image
+      function addImg() {
+
+        requestAnimationFrame(function() {
+
+          // disable click
+          if (href === item.href) {
+            item.style.cursor = 'default';
+            item.addEventListener('click', function(e) { e.preventDefault(); }, false);
+          }
+
+          // add full image
+          item.appendChild(img).addEventListener('animationend', function(e) {
+
+            // remove preview image
+            var pImg = item.querySelector && item.querySelector('img.preview');
+            if (pImg) {
+              e.target.alt = pImg.alt || '';
+              item.removeChild(pImg);
+              e.target.classList.remove('reveal');
+            }
+
+          });
+
+        });
+
+      }
+
+    }
+
+
+
+  }, false);
 
 
 })();

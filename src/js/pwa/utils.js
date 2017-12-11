@@ -3,7 +3,7 @@
 
   // require config.js
 */
-
+/* global CACHE installFilesDesirable installFilesEssential offlineURL */
 
 // install static assets
 function installStaticFiles() {
