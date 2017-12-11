@@ -32,21 +32,21 @@ window.caches.keys()
 
             reqList
               .map(req => req.url)
-              .filter(req => (req.endsWith('/') || req.endsWith('.html')) && !req.endsWith(offlineURL))
+              .filter(req => (req.endsWith('/') || req.endsWith('.html')) && !req.endsWith(offlineURL) && req !== '/error/')
               .sort()
               .forEach(req => {
                 let
                   li = document.createElement('li'),
                   a = li.appendChild(document.createElement('a'));
-                  a.setAttribute('href', req);
-                  a.textContent = a.pathname;
-                  frag.appendChild(li);
+                a.setAttribute('href', req);
+                a.textContent = a.pathname;
+                frag.appendChild(li);
               });
 
             if (list) list.appendChild(frag);
 
           });
 
-      })
+      });
 
   });

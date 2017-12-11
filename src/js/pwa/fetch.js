@@ -3,6 +3,7 @@
 
   // require activate.js
 */
+/* global domain CACHE offlineAsset */
 
 
 // application fetch network data
@@ -23,7 +24,7 @@ self.addEventListener('fetch', event => {
 
             if (response) {
               // return cached file
-              console.log('cache fetch: ' + url);
+              console.log('cache fetch: ', url);
               return response;
             }
 
@@ -31,8 +32,8 @@ self.addEventListener('fetch', event => {
             return fetch(event.request)
               .then(newreq => {
 
-                console.log('network fetch: ' + url);
-                if (newreq.ok) cache.put(event.request, newreq.clone());
+                console.log('network fetch: ', url);
+                if (newreq.ok && (url.startsWith(domain) || url.startsWith('https://fonts.'))) cache.put(event.request, newreq.clone());
                 return newreq;
 
               })
