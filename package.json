@@ -35,7 +35,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "autoprefixer": "7.2.2",
+    "autoprefixer": "7.2.3",
     "css-mqpacker": "6.0.1",
     "cssnano": "3.10.0",
     "del": "3.0.0",
