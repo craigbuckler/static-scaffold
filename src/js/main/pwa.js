@@ -3,7 +3,6 @@
 
   // requires: config.js
 */
-
 /* global ss */
 
 (function() {

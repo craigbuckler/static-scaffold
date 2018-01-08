@@ -114,7 +114,7 @@
     },
 
     headingid: {
-      linkTemplate: '<a href="#%s" class="heading"></a>'
+      linkTemplate: '<a href="#%s" alt="title" class="heading"></a>'
     },
 
     layouts: {

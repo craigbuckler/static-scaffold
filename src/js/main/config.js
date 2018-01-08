@@ -8,6 +8,7 @@ var ss = ss || {
 	font:					'/* @echo font */',
 	pwa:					true,
 	menuId:				'mainmenu',
+	menuOpener:		'menuopen',
 	emailElement:	'a.email',
 	analytics:		'/* @echo analytics */'
 };
